@@ -1,0 +1,3 @@
+Connection between Mysql and Hadoop
+mysql -u root -p
+password: cloudera
