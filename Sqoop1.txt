@@ -63,6 +63,10 @@ sqoop import \
 --password cloudera \
 --m 10
 
+## Protect Password in 2 ways
+[cloudera@quickstart ~]$ sqoop import --connect jdbc:mysql://localhost:3306/retail_db --table orders --username root -P
+Enter password:
 
-
+echo -n "cloudera" > sqoop.pwd
+sqoop import --connect jdbc:mysql://localhost:3306/retail_db --table products --username root --password-file file:///sqoop.pwd
 
