@@ -1,3 +1,68 @@
 Connection between Mysql and Hadoop
-mysql -u root -p
+cloudera: mysql -u root -p
 password: cloudera
+
+## List all Databases
+sqoop list-databases --connect jdbc:mysql://localhost:3306 -username root -password cloudera
+
+ sqoop list-databases \
+> --connect jdbc:mysql://localhost:3306 \
+> --username root \
+> --password cloudera
+
+## List all tables in a Database
+sqoop list-tables --connect jdbc:mysql://localhost:3306/retail_db --username root --password cloudera
+
+sqoop list-tables \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password cloudera
+
+## Importing data from RDBMS TO HADOOP
+sqoop import \
+> --connect jdbc:mysql://localhost:3306/retail_db \
+> --table categories \
+> --username root \
+> --password cloudera
+
+## Check data
+hdfs dfs -cat categories/part-m-00000
+## check data with length
+hdfs dfs -cat categories/part-m-00000 | wc -l
+hdfs dfs -cat categories/part-m-00001 | wc -l
+hdfs dfs -cat categories/part-m-00002 | wc -l
+
+## Querying using SQOOP
+sqoop eval \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password cloudera \
+--query "show tables;"
+
+## Boundary Query using sqoop
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password cloudera \
+--boundary-query "select min(customer_id), max(customer_id) from customers;" \
+--split-by customer_id
+
+## When NO Prmiary key in a table, SO we can use this 
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table orders \
+--username root \
+--password cloudera \
+--m 1
+
+## Increase Number of Splits
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table orders \
+--username root \
+--password cloudera \
+--m 10
+
+
+
+
