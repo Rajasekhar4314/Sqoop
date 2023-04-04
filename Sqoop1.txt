@@ -70,3 +70,4 @@ Enter password:
 echo -n "cloudera" > sqoop.pwd
 sqoop import --connect jdbc:mysql://localhost:3306/retail_db --table products --username root --password-file file:///sqoop.pwd
 
+
