@@ -89,3 +89,50 @@ sqoop import-all-tables \
 --warehouse-dir /user/data \
 --exclude-tables 'orders,products' \
 --autoreset-to-one-mapper
+
+# delete dir
+hdfs dfs -rm -r /user/root/customers
+
+## Speed up the import
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table customers \
+--username root \
+--password-file file:///sqoop.pwd \
+--direct
+
+## Importing data into binary file formats
+# Importing the data as sequencefile
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password-file file:///sqoop.pwd \
+--delete-target-dir \
+--target-dir /user/data/customers \
+--table customers \
+--as-sequencefile
+
+# Importing the data as avrodatafile
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password-file file:///sqoop.pwd \
+--delete-target-dir \
+--target-dir /user/data/customers \
+--table customers \
+--as-avrodatafile
+
+## Importing data using fields-terminated-by
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password cloudera \
+--table customers \
+--delete-target-dir \
+--fields-terminated-by '|'
+
+
+
