@@ -134,5 +134,99 @@ sqoop import \
 --delete-target-dir \
 --fields-terminated-by '|'
 
+## Incremental Imports
 
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password cloudera \
+--table inc_imp \
+--delete-target-dir \
+--m 1
 
+# New data added # using hard coded values
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password cloudera \
+--table inc_imp \
+--m 1 \
+--incremental append \
+--check-column id \
+--last-value 103
+
+## SQOOP JOB
+
+-- create table
+create table inc_imp_dt(id int, name varchar(50), city varchar(50), start_date date);
+
+-- inserting values into table
+insert into inc_imp_dt \
+values(101, 'Vishal', 'Delhi', now()-interval 1 day), \
+(102, 'Sai', 'Bangalore', now()-interval 2 day), \
+(103, 'Viany', 'VNS', now()-interval 3 day)
+
+-- see the data
+select * from inc_imp_dt;
+
+sqoop job \
+--create inc_imp_id \
+-- import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password cloudera \
+--table inc_imp \
+--m 1 \
+--incremental append \
+--check-column id \
+--last-value 0
+
+## EXECUTE THE JOB
+sqoop job --exec inc_imp_id
+
+## LIST ALL JOBS
+sqoop job --list
+
+## Add some more data and Run job
+
+insert into inc_imp_dt \
+values(104, "Utakrsh", "Agra", now()), \
+(105, "Priya", "Delhi", now());
+
+## EXECUTE THE JOB
+sqoop job --exec inc_imp_id
+
+-------------------------------------
+
+## Incremental import using the datetime values (using lastmodified)
+
+-- create a table
+create table inc_imp_dt_tm(id int, name varchar(50), city varchar(50), start_time timestamp);
+
+-- insert values into table
+insert into inc_imp_dt_tm \
+values (101, 'Vishal', 'Delhi', now()), \
+(102, 'Sai', 'Bangalore', now()), \
+(103, 'Viany', 'VNS', now());
+
+sqoop job \
+--create inc_imp_dt_tm \
+-- import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password-file file:///sqoop.pwd \
+--table inc_imp_dt_tm \
+--m 1 \
+--incremental lastmodified \
+--check-column start_time \
+--last-value 0000:00:00-00:00:00 \
+--merge-key id
+
+-- update the record
+update inc_imp_dt_tm set name='Lalit', city='Kolkata' where id=102;
+
+-- insert the record
+insert into inc_imp_dt_tm values (104, 'Rakesh', 'Kolkata', now());
+
+--Run job again
+sqoop job --exec inc_imp_dt_tm
