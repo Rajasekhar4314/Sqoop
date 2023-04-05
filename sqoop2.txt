@@ -1,0 +1,91 @@
+
+## Importing the data to target directory
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table customers \
+--username root \
+--password-file file:///sqoop.pwd \
+--target-dir /user/data/customers
+
+## Deleting target directory and import
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table customers \
+--username root \
+--password-file file:///sqoop.pwd \
+--target-dir /user/data/customers \
+--delete-target-dir
+
+## Add data to an existing file in directory
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table customers \
+--username root \
+--password-file file:///sqoop.pwd \
+--target-dir /user/data/customers \
+--append
+
+## Importing data inside parent directory (WAREHOUSE)
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table products \
+--username root \
+--password-file file:///sqoop.pwd \
+--warehouse-dir /user/data
+
+## Import all rows but specific columns
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table customers \
+--username root \
+--password-file file:///sqoop.pwd \
+--target-dir /user/data/customers \
+--delete-target-dir \
+--columns "customer_id, customer_fname, customer_lname"
+
+## Import all columns but specific rows
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table customers \
+--username root \
+--password-file file:///sqoop.pwd \
+--target-dir /user/data/customers \
+--delete-target-dir \
+--where "customer_id < 100"
+
+## IMPORT SPECICIFC ROWS AND COLUMNS
+
+sqoop import \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--table customers \
+--username root \
+--password-file file:///sqoop.pwd \
+--target-dir /user/data/customers \
+--delete-target-dir \
+--columns "customer_id, customer_fname, customer_lname" \
+--where "customer_id < 100"
+
+##IMPORT ALL TABLES OF MYSQL TO HADOOP
+
+sqoop import-all-tables \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password-file file:///sqoop.pwd \
+--warehouse-dir /user/data \
+--autoreset-to-one-mapper
+
+## IMPORT ALL TABLES BUT EXCLUDE SOME
+
+sqoop import-all-tables \
+--connect jdbc:mysql://localhost:3306/retail_db \
+--username root \
+--password-file file:///sqoop.pwd \
+--warehouse-dir /user/data \
+--exclude-tables 'orders,products' \
+--autoreset-to-one-mapper
